@@ -126,18 +126,64 @@ input.error{border-color:#E53E3E;box-shadow:0 0 0 3px rgba(229,62,62,0.1);}
 .loading-state{text-align:center;padding:32px 20px;color:#8CA899;font-size:13px;}
 
 /* RESPONSIVE */
-@media(max-width:600px){
-  header{padding:20px 18px 18px;}
-  .deadline-banner{padding:9px 18px;}
-  .tabs{padding:0 18px;}
-  .wrap,.results-wrap{padding:0 14px;margin-top:24px;}
-  .card{padding:20px 18px;}
-  .stat-row{grid-template-columns:1fr 1fr;}
+@media(max-width:640px){
+  /* Header */
+  header{padding:18px 16px 16px;}
+  .usf-logo{flex-direction:row;gap:10px;margin-bottom:10px;}
+  .usf-logo img{height:56px;}
+  .usf-label{font-size:10px;letter-spacing:0.12em;}
+  .usf-chapter{font-size:12px;}
+  header h1{font-size:20px;}
+  header p{font-size:12px;}
+
+  /* Deadline banner */
+  .deadline-banner{padding:8px 16px;font-size:12px;}
+
+  /* Tabs — bigger touch targets */
+  .tabs{padding:0 16px;}
+  .tab-btn{padding:14px 18px;font-size:13px;flex:1;text-align:center;}
+
+  /* Content */
+  .wrap,.results-wrap{padding:0 12px;margin-top:20px;}
+  .card{padding:18px 16px;margin-bottom:16px;}
+  .card-title{font-size:17px;}
+
+  /* Slot buttons — bigger for thumbs */
+  .slot-btn{padding:10px 14px;font-size:14px;}
+  .slot-btn .ck{width:18px;height:18px;font-size:10px;}
+  .slot-grid{gap:10px;}
+  .slot-actions{gap:10px;}
+  .slot-action-btn{padding:7px 16px;font-size:13px;}
+
+  /* Submit */
+  .submit-btn{padding:16px;font-size:16px;}
+
+  /* Stats */
+  .stat-row{grid-template-columns:1fr 1fr;gap:10px;}
   .stat-row .stat-card:last-child{grid-column:1/-1;}
-  .slot-label{width:130px;font-size:12px;}
-  .results-card{padding:18px 16px;}
-  .responders-table{font-size:12px;}
-  .responders-table th,.responders-table td{padding:7px 8px;}
+  .stat-num{font-size:28px;}
+
+  /* Results card */
+  .results-card{padding:16px 14px;}
+
+  /* Bar chart — shorten labels */
+  .slot-row{gap:8px;}
+  .slot-label{width:100px;font-size:11px;}
+  .bar-count{width:32px;font-size:11px;}
+
+  /* Table — horizontal scroll on small screens */
+  #table-container{overflow-x:auto;-webkit-overflow-scrolling:touch;}
+  .responders-table{font-size:12px;min-width:520px;}
+  .responders-table th,.responders-table td{padding:8px 10px;}
+
+  /* Export buttons — stack them */
+  .results-toolbar{flex-direction:column;align-items:stretch;}
+  .results-toolbar > div{display:flex;gap:8px;}
+  .export-btn{flex:1;margin-left:0;text-align:center;}
+  .refresh-btn{width:100%;text-align:center;}
+
+  /* Config warning */
+  .config-warn{font-size:12px;padding:12px 14px;}
 }
 </style>
 </head>
