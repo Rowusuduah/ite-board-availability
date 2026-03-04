@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>USF ITE – Board Meeting Availability</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<style>
+:root {
+  --green:#00843D; --gold:#CFC493; --dark:#0D1F14; --mid:#1E3A28;
+  --light:#F4F9F6; --border:#C8DCCE; --card:#FFFFFF;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'DM Sans',sans-serif;background:var(--light);color:var(--dark);min-height:100vh;padding-bottom:60px;}
+
+/* HEADER */
+header{background:var(--dark);padding:28px 36px 24px;position:relative;overflow:hidden;}
+header::before{content:'';position:absolute;top:-40px;right:-40px;width:220px;height:220px;border-radius:50%;background:radial-gradient(circle,rgba(0,132,61,0.2) 0%,transparent 70%);}
+.usf-logo{display:flex;align-items:center;gap:14px;margin-bottom:14px;}
+.usf-logo img{height:52px;object-fit:contain;}
+.usf-wordmark{display:flex;flex-direction:column;gap:2px;}
+.usf-label{font-size:11px;font-weight:600;letter-spacing:0.18em;text-transform:uppercase;color:var(--gold);}
+.usf-chapter{font-size:13px;font-weight:500;color:rgba(255,255,255,0.7);}
+header h1{font-family:'DM Serif Display',serif;color:#fff;font-size:clamp(20px,3.5vw,30px);line-height:1.2;max-width:540px;position:relative;}
+header p{color:rgba(255,255,255,0.55);font-size:13px;margin-top:6px;font-weight:300;}
+
+/* DEADLINE BANNER */
+.deadline-banner{background:rgba(207,196,147,0.12);border-bottom:1px solid rgba(207,196,147,0.25);padding:9px 36px;font-size:12.5px;color:var(--gold);display:flex;align-items:center;gap:8px;}
+
+/* CONFIG WARNING */
+.config-warn{background:#FFF8E6;border:1px solid #E8C84A;border-radius:10px;padding:14px 18px;margin-bottom:20px;font-size:13px;color:#7A5C00;line-height:1.6;}
+.config-warn strong{display:block;margin-bottom:3px;font-size:14px;}
+.config-warn code{background:rgba(0,0,0,0.07);border-radius:4px;padding:1px 6px;font-family:monospace;font-size:12px;}
+
+/* TABS */
+.tabs{display:flex;background:var(--dark);padding:0 36px;border-top:1px solid rgba(255,255,255,0.08);}
+.tab-btn{padding:12px 22px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;color:rgba(255,255,255,0.45);background:none;border:none;border-bottom:3px solid transparent;cursor:pointer;letter-spacing:0.04em;transition:all 0.2s;}
+.tab-btn.active{color:#fff;border-bottom-color:var(--gold);}
+.tab-btn:hover:not(.active){color:rgba(255,255,255,0.75);}
+
+.tab-panel{display:none;} .tab-panel.active{display:block;}
+.wrap{max-width:700px;margin:36px auto 0;padding:0 20px;}
+
+/* CARDS */
+.card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:26px 30px;margin-bottom:22px;box-shadow:0 2px 10px rgba(0,0,0,0.05);}
+.card-title{font-family:'DM Serif Display',serif;font-size:18px;color:var(--dark);margin-bottom:4px;}
+.card-sub{font-size:13px;color:#5A7A65;margin-bottom:18px;}
+.field-label{font-size:13px;font-weight:600;color:var(--dark);margin-bottom:7px;}
+.field-label span.req{color:var(--green);}
+input[type=text],input[type=email]{width:100%;border:1.5px solid var(--border);border-radius:8px;padding:10px 13px;font-family:'DM Sans',sans-serif;font-size:14px;color:var(--dark);background:#fafcfb;outline:none;margin-bottom:16px;transition:border-color 0.2s,box-shadow 0.2s;}
+input[type=text]:focus,input[type=email]:focus{border-color:var(--green);box-shadow:0 0 0 3px rgba(0,132,61,0.12);background:#fff;}
+input.error{border-color:#E53E3E;box-shadow:0 0 0 3px rgba(229,62,62,0.1);}
+
+/* INFO NOTE */
+.info-note{background:#EDF7F2;border-left:3px solid var(--green);border-radius:0 8px 8px 0;padding:9px 13px;font-size:12.5px;color:#2E6645;margin-bottom:18px;line-height:1.5;}
+
+/* SLOT SECTION */
+.sel-count{font-size:12.5px;color:#5A7A65;margin-bottom:10px;font-weight:500;}
+.sel-count span{color:var(--green);font-weight:700;}
+.slot-actions{display:flex;gap:8px;margin-bottom:14px;}
+.slot-action-btn{font-size:12px;font-weight:600;color:#5A7A65;background:none;border:1.5px solid var(--border);border-radius:20px;padding:4px 12px;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all 0.15s;}
+.slot-action-btn:hover{border-color:var(--green);color:var(--green);background:#EDF7F2;}
+.day-header{display:flex;align-items:center;gap:9px;margin-bottom:12px;}
+.day-dot{width:8px;height:8px;border-radius:50%;background:var(--green);flex-shrink:0;}
+.day-name{font-size:13px;font-weight:600;color:var(--mid);letter-spacing:0.06em;text-transform:uppercase;}
+.day-date{font-size:12px;color:#8CA899;}
+.slot-grid{display:flex;flex-wrap:wrap;gap:8px;}
+
+/* SLOT BUTTONS — circle is EMPTY by default, fills only when selected */
+.slot-btn{display:flex;align-items:center;gap:7px;padding:8px 13px;border-radius:40px;border:1.5px solid var(--border);background:#fafcfb;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;color:#3A5A45;transition:all 0.18s;user-select:none;}
+.slot-btn:hover{border-color:var(--green);background:#E6F4EC;color:var(--green);}
+.slot-btn.selected{border-color:var(--green);background:#E6F4EC;color:var(--green);font-weight:600;}
+.slot-btn .ck{width:16px;height:16px;border-radius:50%;border:1.5px solid currentColor;display:flex;align-items:center;justify-content:center;font-size:9px;flex-shrink:0;transition:all 0.15s;}
+.slot-btn.selected .ck{background:var(--green);border-color:var(--green);color:#fff;}
+.slot-btn.selected .ck::after{content:'✓';}
+
+/* AGENDA */
+.agenda-list{background:#EDF7F2;border-radius:8px;padding:13px 15px;margin-bottom:18px;font-size:13px;line-height:2.1;color:#1E3A28;}
+
+/* SUBMIT BUTTON */
+.submit-btn{width:100%;background:var(--green);color:#fff;border:none;border-radius:10px;padding:14px;font-family:'DM Serif Display',serif;font-size:17px;cursor:pointer;transition:background 0.2s,transform 0.1s;display:flex;align-items:center;justify-content:center;gap:10px;}
+.submit-btn:hover:not(:disabled){background:#006B30;transform:translateY(-1px);}
+.submit-btn:disabled{background:#8CA899;cursor:not-allowed;transform:none;}
+.spinner{width:18px;height:18px;border:2.5px solid rgba(255,255,255,0.35);border-top-color:#fff;border-radius:50%;animation:spin 0.7s linear infinite;flex-shrink:0;}
+@keyframes spin{to{transform:rotate(360deg);}}
+
+/* ERROR BANNER */
+.error-banner{display:none;background:#FFF3F3;border:1px solid #FEB2B2;border-radius:8px;padding:10px 14px;margin-bottom:14px;font-size:13px;color:#C53030;line-height:1.5;}
+
+/* SUCCESS */
+.success-screen{display:none;text-align:center;padding:40px 20px;}
+.success-screen h2{font-family:'DM Serif Display',serif;font-size:26px;margin:12px 0 8px;}
+.success-screen p{font-size:13px;color:#5A7A65;max-width:340px;margin:0 auto;line-height:1.7;}
+.view-results-btn{display:inline-block;margin-top:18px;background:var(--green);color:#fff;border:none;border-radius:8px;padding:10px 26px;font-family:'DM Sans',sans-serif;font-weight:600;font-size:13px;cursor:pointer;transition:background 0.2s;}
+.view-results-btn:hover{background:#006B30;}
+
+/* RESULTS TAB */
+.results-wrap{max-width:820px;margin:36px auto 0;padding:0 20px;}
+.results-toolbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:10px;}
+.stat-row{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:22px;}
+.stat-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:18px 20px;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,0.04);}
+.stat-num{font-family:'DM Serif Display',serif;font-size:32px;color:var(--green);}
+.stat-label{font-size:12px;color:#5A7A65;margin-top:3px;font-weight:500;letter-spacing:0.04em;text-transform:uppercase;}
+.results-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:24px 28px;margin-bottom:20px;box-shadow:0 2px 10px rgba(0,0,0,0.05);}
+.results-card h3{font-family:'DM Serif Display',serif;font-size:17px;margin-bottom:16px;color:var(--dark);}
+.slot-row{display:flex;align-items:center;gap:12px;margin-bottom:12px;}
+.slot-label{font-size:13px;font-weight:500;color:var(--mid);width:165px;flex-shrink:0;}
+.bar-wrap{flex:1;background:#E8F2EC;border-radius:20px;height:22px;overflow:hidden;}
+.bar-fill{height:100%;background:var(--green);border-radius:20px;transition:width 0.7s cubic-bezier(.4,0,.2,1);display:flex;align-items:center;justify-content:flex-end;padding-right:8px;min-width:0;}
+.bar-fill.top{background:#005C28;}
+.bar-pct{font-size:11px;font-weight:700;color:#fff;white-space:nowrap;}
+.bar-count{font-size:12px;color:#5A7A65;width:42px;text-align:right;flex-shrink:0;}
+.responders-table{width:100%;border-collapse:collapse;font-size:13px;}
+.responders-table th{background:#F0F7F3;padding:9px 12px;text-align:left;font-weight:600;color:var(--mid);font-size:12px;letter-spacing:0.04em;text-transform:uppercase;border-bottom:1px solid var(--border);}
+.responders-table td{padding:9px 12px;border-bottom:1px solid #EBF3EE;color:var(--dark);vertical-align:top;}
+.responders-table tr:last-child td{border-bottom:none;}
+.chip{display:inline-block;background:#E6F4EC;color:var(--green);border-radius:20px;padding:2px 9px;font-size:11px;font-weight:600;margin:2px 2px 2px 0;}
+.refresh-btn{background:none;border:1.5px solid var(--border);color:#5A7A65;border-radius:8px;padding:7px 16px;font-size:13px;cursor:pointer;font-family:'DM Sans',sans-serif;font-weight:500;transition:all 0.2s;}
+.refresh-btn:hover{border-color:var(--green);color:var(--green);}
+.export-btn{background:var(--green);color:#fff;border:none;border-radius:8px;padding:8px 18px;font-size:13px;cursor:pointer;font-family:'DM Sans',sans-serif;font-weight:600;transition:background 0.2s;margin-left:8px;}
+.export-btn:hover{background:#006B30;}
+.export-btn.excel{background:#1E3A28;}
+.export-btn.excel:hover{background:#152B1E;}
+.empty-state{text-align:center;padding:40px 20px;color:#8CA899;font-size:14px;}
+.best-badge{background:var(--gold);color:var(--dark);border-radius:6px;font-size:10px;font-weight:700;padding:2px 7px;letter-spacing:0.06em;text-transform:uppercase;margin-left:8px;vertical-align:middle;}
+.loading-state{text-align:center;padding:32px 20px;color:#8CA899;font-size:13px;}
+
+/* RESPONSIVE */
+@media(max-width:600px){
+  header{padding:20px 18px 18px;}
+  .deadline-banner{padding:9px 18px;}
+  .tabs{padding:0 18px;}
+  .wrap,.results-wrap{padding:0 14px;margin-top:24px;}
+  .card{padding:20px 18px;}
+  .stat-row{grid-template-columns:1fr 1fr;}
+  .stat-row .stat-card:last-child{grid-column:1/-1;}
+  .slot-label{width:130px;font-size:12px;}
+  .results-card{padding:18px 16px;}
+  .responders-table{font-size:12px;}
+  .responders-table th,.responders-table td{padding:7px 8px;}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="usf-logo">
+    <div class="usf-wordmark">
+      <span class="usf-label">USF Institute of Transportation Engineers</span>
+      <span class="usf-chapter">University of South Florida Chapter</span>
+    </div>
+  </div>
+  <h1>Board Meeting Availability</h1>
+  <p>Spring 2026 &middot; Friday, March 6 &middot; 45-minute meeting with virtual option</p>
+</header>
+
+<div class="deadline-banner">
+  &#9200; Please respond by <strong style="margin:0 3px;">Thursday, March 5</strong> so Richmond can confirm the meeting time.
+</div>
+
+<div class="tabs">
+  <button class="tab-btn active" onclick="switchTab('form')">Submit Availability</button>
+  <button class="tab-btn" onclick="switchTab('results')">Live Results</button>
+</div>
+
+<!-- ===== FORM TAB ===== -->
+<div id="tab-form" class="tab-panel active">
+<div class="wrap">
+
+  <div id="config-warn" class="config-warn" style="display:none">
+    <strong>&#9888; Setup needed — responses will not be saved</strong>
+    Open this file and replace <code>YOUR_APPS_SCRIPT_URL_HERE</code> with your deployed Google Apps Script URL. See <code>Code.gs</code> for the backend you need to deploy.
+  </div>
+
+  <div class="card" id="main-form">
+    <div class="card-title">Your Information</div>
+    <div class="card-sub">So we know who's responding</div>
+    <div class="field-label">Full Name <span class="req">*</span></div>
+    <input type="text" id="inp-name" placeholder="e.g. Alex Rivera" autocomplete="name"/>
+    <div class="field-label">USF Email <span class="req">*</span></div>
+    <input type="email" id="inp-email" placeholder="yournetid@usf.edu" autocomplete="email"/>
+  </div>
+
+  <div class="card" id="slots-card">
+    <div class="card-title">Select Your Available Times</div>
+    <div class="card-sub">Check every 45-minute block that works for you on Friday, March 6</div>
+    <div class="info-note">&#8987; These slots reflect Jodi Godfrey's open availability. Please select <strong>all</strong> times that work — more options makes it easier to find a time everyone can attend.</div>
+    <div class="sel-count">You've selected <span id="count">0</span> time slot(s)</div>
+    <div class="slot-actions">
+      <button class="slot-action-btn" onclick="selectAll()">Select All</button>
+      <button class="slot-action-btn" onclick="clearAll()">Clear All</button>
+    </div>
+    <div class="day-header">
+      <div class="day-dot"></div>
+      <span class="day-name">Friday</span>
+      <span class="day-date">March 6, 2026</span>
+    </div>
+    <div class="slot-grid" id="slot-grid">
+      <!-- Slot buttons injected by JS so circles are empty by default -->
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Meeting Agenda</div>
+    <div class="card-sub">Topics to be discussed &mdash; from Jodi's email</div>
+    <div class="agenda-list">
+      <div>&#128197; <strong>1. Semester Activities Planning</strong></div>
+      <div>&#128379; <strong>2. Upcoming Chapter Elections</strong> <span style="color:#5A7A65;font-weight:400;">(bylaws review &amp; requirements)</span></div>
+      <div>&#129309; <strong>3. Volunteer Opportunities</strong></div>
+      <div>&#127881; <strong>4. Social Events for the Semester</strong></div>
+      <div>&#128176; <strong>5. Chapter Finances</strong></div>
+      <div>&#127908; <strong>6. Mock Interviews</strong></div>
+    </div>
+    <div class="field-label">Additional Notes <span style="color:#8CA899;font-weight:400;">(optional)</span></div>
+    <input type="text" id="inp-notes" placeholder="e.g. I prefer virtual, or I'm flexible any time listed" style="margin-bottom:0;"/>
+  </div>
+
+  <div id="error-banner" class="error-banner"></div>
+  <button class="submit-btn" id="submit-btn" onclick="submitForm()">Submit My Availability &rarr;</button>
+
+  <div class="success-screen" id="success-screen">
+    <div style="font-size:52px;">&#9989;</div>
+    <h2>Thanks for responding!</h2>
+    <p>Your availability has been recorded. Richmond will follow up with the confirmed meeting time shortly.</p>
+    <button class="view-results-btn" onclick="switchTab('results')">View Live Results &rarr;</button>
+  </div>
+
+</div>
+</div>
+
+<!-- ===== RESULTS TAB ===== -->
+<div id="tab-results" class="tab-panel">
+<div class="results-wrap">
+
+  <div class="results-toolbar">
+    <button class="refresh-btn" onclick="loadResults()">&#8635; Refresh</button>
+    <div>
+      <button class="export-btn" onclick="exportCSV()">&#8595; Export CSV</button>
+      <button class="export-btn excel" onclick="exportExcel()">&#128202; Export Excel</button>
+    </div>
+  </div>
+
+  <div class="stat-row">
+    <div class="stat-card">
+      <div class="stat-num" id="stat-total">—</div>
+      <div class="stat-label">Responses</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num" id="stat-best-pct">—</div>
+      <div class="stat-label">Best Slot</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num" id="stat-best-slot">—</div>
+      <div class="stat-label">Most Popular</div>
+    </div>
+  </div>
+
+  <div class="results-card">
+    <h3>Slot Availability <span style="font-size:13px;font-weight:400;color:#5A7A65;">— Friday, March 6</span></h3>
+    <div id="bars-container"><div class="loading-state">Loading results...</div></div>
+  </div>
+
+  <div class="results-card">
+    <h3>All Responses</h3>
+    <div id="table-container"><div class="loading-state">Loading...</div></div>
+  </div>
+
+</div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script>
+// ─── CONFIGURATION ────────────────────────────────────────────────────────────
+// 1. Deploy Code.gs as a Google Apps Script web app (see Code.gs for instructions)
+// 2. Paste your deployed URL below, replacing the placeholder
+const GAS_URL = 'YOUR_APPS_SCRIPT_URL_HERE';
+// ─────────────────────────────────────────────────────────────────────────────
+
+const SLOTS = [
+  "8:00 – 8:45 AM",
+  "8:45 – 9:30 AM",
+  "9:30 – 10:15 AM",
+  "10:15 – 11:00 AM",
+  "11:00 – 11:45 AM",
+  "1:00 – 1:45 PM",
+  "4:00 – 4:45 PM"
+];
+
+const selected = new Set();
+
+// ── Init ──────────────────────────────────────────────────────────────────────
+
+if (GAS_URL === 'YOUR_APPS_SCRIPT_URL_HERE') {
+  document.getElementById('config-warn').style.display = 'block';
+}
+
+// Build slot buttons via JS so circles start EMPTY (not pre-checked)
+const grid = document.getElementById('slot-grid');
+SLOTS.forEach(slot => {
+  const btn = document.createElement('div');
+  btn.className = 'slot-btn';
+  btn.dataset.slot = slot;
+  btn.innerHTML = `<span class="ck"></span>${slot}`;
+  btn.onclick = () => toggleSlot(btn);
+  grid.appendChild(btn);
+});
+
+// Pre-fill email if they've submitted before
+const savedEmail = localStorage.getItem('ite-form-email');
+if (savedEmail) document.getElementById('inp-email').value = savedEmail;
+
+// ── Tab switching ─────────────────────────────────────────────────────────────
+
+function switchTab(t) {
+  const isForm = t === 'form';
+  document.querySelectorAll('.tab-btn').forEach((b, i) =>
+    b.classList.toggle('active', isForm ? i === 0 : i === 1)
+  );
+  document.getElementById('tab-form').classList.toggle('active', isForm);
+  document.getElementById('tab-results').classList.toggle('active', !isForm);
+  if (!isForm) loadResults();
+}
+
+// ── Slot selection ────────────────────────────────────────────────────────────
+
+function toggleSlot(el) {
+  const s = el.dataset.slot;
+  if (selected.has(s)) {
+    selected.delete(s);
+    el.classList.remove('selected');
+  } else {
+    selected.add(s);
+    el.classList.add('selected');
+  }
+  document.getElementById('count').textContent = selected.size;
+}
+
+function selectAll() {
+  document.querySelectorAll('.slot-btn').forEach(btn => {
+    selected.add(btn.dataset.slot);
+    btn.classList.add('selected');
+  });
+  document.getElementById('count').textContent = selected.size;
+}
+
+function clearAll() {
+  selected.clear();
+  document.querySelectorAll('.slot-btn').forEach(btn => btn.classList.remove('selected'));
+  document.getElementById('count').textContent = 0;
+}
+
+// ── Error display ─────────────────────────────────────────────────────────────
+
+function showError(msg) {
+  const el = document.getElementById('error-banner');
+  el.textContent = msg;
+  el.style.display = 'block';
+  el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  setTimeout(() => { el.style.display = 'none'; }, 7000);
+}
+
+// ── Submit ────────────────────────────────────────────────────────────────────
+
+async function submitForm() {
+  const name  = document.getElementById('inp-name').value.trim();
+  const email = document.getElementById('inp-email').value.trim();
+
+  if (!name)  { showError('Please enter your full name.'); return; }
+  if (!email || !email.toLowerCase().includes('@usf.edu')) {
+    showError('Please enter a valid @usf.edu email address.');
+    return;
+  }
+  if (selected.size === 0) {
+    showError('Please select at least one time slot before submitting.');
+    return;
+  }
+
+  const btn = document.getElementById('submit-btn');
+  btn.disabled = true;
+  btn.innerHTML = '<div class="spinner"></div>Submitting…';
+  document.getElementById('error-banner').style.display = 'none';
+
+  const entry = {
+    name,
+    email,
+    slots: [...selected],
+    notes: document.getElementById('inp-notes').value.trim(),
+    timestamp: new Date().toISOString()
+  };
+
+  try {
+    const resp = await fetch(GAS_URL, {
+      method: 'POST',
+      body: JSON.stringify(entry),
+      redirect: 'follow'
+    });
+    const result = await resp.json();
+    if (!result.ok) throw new Error(result.error || 'Server error');
+
+    localStorage.setItem('ite-form-email', email);
+
+    // Show success
+    document.querySelectorAll('#tab-form .card').forEach(c => c.style.display = 'none');
+    btn.style.display = 'none';
+    document.getElementById('success-screen').style.display = 'block';
+
+  } catch (err) {
+    btn.disabled = false;
+    btn.innerHTML = 'Submit My Availability &rarr;';
+    showError('Could not save your response — please check your connection and try again.');
+    console.error(err);
+  }
+}
+
+// ── Load Results ──────────────────────────────────────────────────────────────
+
+async function loadResults() {
+  document.getElementById('bars-container').innerHTML = '<div class="loading-state">Loading…</div>';
+  document.getElementById('table-container').innerHTML = '<div class="loading-state">Loading…</div>';
+
+  let responses = [];
+  try {
+    const resp = await fetch(GAS_URL + '?action=getAll', { redirect: 'follow' });
+    const result = await resp.json();
+    if (result.ok) responses = result.responses;
+  } catch (e) {
+    document.getElementById('bars-container').innerHTML =
+      '<div class="empty-state">Could not load results. Check your connection or try refreshing.</div>';
+    document.getElementById('table-container').innerHTML = '';
+    return;
+  }
+
+  const total = responses.length;
+  document.getElementById('stat-total').textContent = total;
+
+  const counts = {};
+  SLOTS.forEach(s => counts[s] = 0);
+  responses.forEach(r => {
+    if (r.slots) r.slots.forEach(s => { if (counts[s] !== undefined) counts[s]++; });
+  });
+
+  const maxCount = Math.max(...Object.values(counts), 1);
+  const bestSlot = SLOTS.find(s => counts[s] === maxCount) || '—';
+  document.getElementById('stat-best-pct').textContent =
+    total > 0 ? Math.round((maxCount / total) * 100) + '%' : '—';
+  document.getElementById('stat-best-slot').textContent =
+    total > 0 ? bestSlot.split('–')[0].trim() : '—';
+
+  // Bars
+  const barsEl = document.getElementById('bars-container');
+  if (total === 0) {
+    barsEl.innerHTML = '<div class="empty-state">No responses yet — be the first to submit!</div>';
+  } else {
+    barsEl.innerHTML = SLOTS.map(s => {
+      const c = counts[s];
+      const pct = total > 0 ? Math.round((c / total) * 100) : 0;
+      const isTop = c === maxCount && c > 0;
+      return `<div class="slot-row">
+        <div class="slot-label">${s}${isTop ? '<span class="best-badge">Best</span>' : ''}</div>
+        <div class="bar-wrap">
+          <div class="bar-fill${isTop ? ' top' : ''}" style="width:${pct}%">
+            <span class="bar-pct">${pct > 12 ? pct + '%' : ''}</span>
+          </div>
+        </div>
+        <div class="bar-count">${c}/${total}</div>
+      </div>`;
+    }).join('');
+  }
+
+  // Table
+  const tableEl = document.getElementById('table-container');
+  if (total === 0) {
+    tableEl.innerHTML = '<div class="empty-state">No responses yet.</div>';
+  } else {
+    tableEl.innerHTML = `<table class="responders-table">
+      <thead>
+        <tr><th>#</th><th>Name</th><th>Email</th><th>Available Slots</th><th>Notes</th><th>Submitted</th></tr>
+      </thead>
+      <tbody>
+        ${responses.map((r, i) => `<tr>
+          <td>${i + 1}</td>
+          <td><strong>${escHtml(r.name)}</strong></td>
+          <td style="font-size:12px;color:#5A7A65;">${escHtml(r.email)}</td>
+          <td>${(r.slots || []).map(s => `<span class="chip">${escHtml(s)}</span>`).join('')}</td>
+          <td style="color:#5A7A65;font-size:12px;">${escHtml(r.notes || '—')}</td>
+          <td style="font-size:11px;color:#8CA899;white-space:nowrap;">${fmtDate(r.timestamp)}</td>
+        </tr>`).join('')}
+      </tbody>
+    </table>`;
+  }
+
+  window._responses = responses;
+  window._counts = counts;
+}
+
+function escHtml(s) {
+  return String(s)
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function fmtDate(ts) {
+  try {
+    return new Date(ts).toLocaleDateString('en-US', {
+      month: 'short', day: 'numeric',
+      hour: '2-digit', minute: '2-digit'
+    });
+  } catch { return ts; }
+}
+
+// ── Export CSV ────────────────────────────────────────────────────────────────
+
+function exportCSV() {
+  const responses = window._responses || [];
+  if (!responses.length) { alert('No data to export yet.'); return; }
+  const rows = [['Name', 'Email', 'Available Slots', 'Notes', 'Submitted']];
+  responses.forEach(r => rows.push([
+    r.name, r.email,
+    (r.slots || []).join('; '),
+    r.notes || '',
+    new Date(r.timestamp).toLocaleString()
+  ]));
+  const csv = rows.map(r => r.map(v => `"${String(v).replace(/"/g, '""')}"`).join(',')).join('\n');
+  const blob = new Blob([csv], { type: 'text/csv' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'USF_ITE_Availability.csv';
+  a.click();
+}
+
+// ── Export Excel ──────────────────────────────────────────────────────────────
+
+function exportExcel() {
+  const responses = window._responses || [];
+  const counts = window._counts || {};
+  if (!responses.length) { alert('No data to export yet.'); return; }
+
+  const wb = XLSX.utils.book_new();
+
+  // Sheet 1: Raw responses
+  const wsData = [['Name', 'Email', 'Available Slots', '# Slots', 'Notes', 'Submitted']];
+  responses.forEach(r => wsData.push([
+    r.name, r.email,
+    (r.slots || []).join('; '),
+    (r.slots || []).length,
+    r.notes || '',
+    new Date(r.timestamp).toLocaleString()
+  ]));
+  const ws1 = XLSX.utils.aoa_to_sheet(wsData);
+  ws1['!cols'] = [{wch:22},{wch:28},{wch:55},{wch:10},{wch:30},{wch:20}];
+  XLSX.utils.book_append_sheet(wb, ws1, 'Responses');
+
+  // Sheet 2: Slot analysis
+  const total = responses.length;
+  const maxC = Math.max(...Object.values(counts), 0);
+  const anaData = [['Time Slot', 'Responses', 'Total Members', 'Availability %', 'Best Slot?']];
+  SLOTS.forEach(s => {
+    const c = counts[s] || 0;
+    anaData.push([
+      `Fri 3/6 ${s}`, c, total,
+      total > 0 ? ((c / total) * 100).toFixed(1) + '%' : '0%',
+      c === maxC && c > 0 ? '✓ BEST' : ''
+    ]);
+  });
+  anaData.push([], ['SUMMARY']);
+  anaData.push(['Total Responses', total]);
+  anaData.push(['Best Slot', SLOTS.find(s => (counts[s] || 0) === maxC) || 'N/A']);
+  anaData.push(['Best Slot Availability', total > 0 ? Math.round((maxC / total) * 100) + '%' : 'N/A']);
+  const ws2 = XLSX.utils.aoa_to_sheet(anaData);
+  ws2['!cols'] = [{wch:28},{wch:14},{wch:16},{wch:18},{wch:12}];
+  XLSX.utils.book_append_sheet(wb, ws2, 'Slot Analysis');
+
+  // Sheet 3: Availability matrix
+  const matrixRows = [['Name', 'Email', ...SLOTS, 'Total Available']];
+  responses.forEach(r => {
+    matrixRows.push([
+      r.name, r.email,
+      ...SLOTS.map(s => (r.slots || []).includes(s) ? 1 : 0),
+      (r.slots || []).length
+    ]);
+  });
+  matrixRows.push([
+    'TOTALS', '',
+    ...SLOTS.map(s => counts[s] || 0),
+    responses.reduce((a, r) => a + (r.slots || []).length, 0)
+  ]);
+  const ws3 = XLSX.utils.aoa_to_sheet(matrixRows);
+  ws3['!cols'] = [{wch:22},{wch:28},...SLOTS.map(()=>({wch:16})),{wch:16}];
+  XLSX.utils.book_append_sheet(wb, ws3, 'Availability Matrix');
+
+  XLSX.writeFile(wb, 'USF_ITE_Board_Availability.xlsx');
+}
+</script>
+</body>
+</html>
